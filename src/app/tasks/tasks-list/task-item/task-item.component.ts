@@ -1,8 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { Task, TaskStatus } from '../../task.model';
 
+import { TasksService } from '../../tasks.service';
 @Component({
   selector: 'app-task-item',
   standalone: true,
@@ -11,35 +12,50 @@ import { Task, TaskStatus } from '../../task.model';
   styleUrl: './task-item.component.scss',
 })
 export class TaskItemComponent {
+  private tasksService = inject(TasksService)
   task = input.required<Task>();
-  taskStatus = computed(() => {
+  // taskStatus = computed(() => {
+  //   switch (this.task().status) {
+  //     case 'OPEN':
+  //       return 'Open';
+  //     case 'IN_PROGRESS':
+  //       return 'Working on it';
+  //     case 'DONE':
+  //       return 'Completed';
+  //     default:
+  //       return 'Open';
+  //   }
+  // });
+  getShort(){
     switch (this.task().status) {
-      case 'OPEN':
-        return 'Open';
-      case 'IN_PROGRESS':
-        return 'Working on it';
-      case 'DONE':
-        return 'Completed';
-      default:
-        return 'Open';
-    }
-  });
-
-  onChangeTaskStatus(taskId: string, status: string) {
+          case 'OPEN':
+            return 'Open';
+          case 'IN_PROGRESS':
+            return 'Working on it';
+          case 'DONE':
+            return 'Completed';
+          default:
+            return 'Open';
+        }
+  }
+  onChangeTaskStatus(status: string) {
     let newStatus: TaskStatus = 'OPEN';
 
     switch (status) {
-      case 'open':
+      case 'OPEN':
         newStatus = 'OPEN';
         break;
-      case 'in-progress':
+      case 'IN_PROGRESS':
         newStatus = 'IN_PROGRESS';
         break;
-      case 'done':
+      case 'DONE':
         newStatus = 'DONE';
         break;
       default:
         break;
     }
+    
+    
+    this.tasksService.changeSatusOfTask(this.task().id,newStatus)
   }
 }
